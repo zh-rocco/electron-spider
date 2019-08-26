@@ -68,7 +68,7 @@ export default function FunctionalApp() {
   return (
     <div className={classes.App}>
       <header>
-        <h1>头条图片下载器</h1>
+        <h1>Electron Spider</h1>
 
         <form noValidate autoComplete="true">
           <TextField

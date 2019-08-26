@@ -10,9 +10,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron-dev": "concurrently \"BROWSER=none react-scripts start\" \"wait-on http://localhost:3000 && electron .\"",
-    "package": "electron-builder build --win --x64",
-    "package-win": "yarn build && electron-builder build --win --x64"
+    "electron": "electron . --debug",
+    "package:win": "rm -rf dist/win && yarn build && electron-builder build --win --ia32",
+    "package:mac": "rm -rf dist/mac && yarn build && electron-builder build --mac --x64"
   },
   "dependencies": {
     "@material-ui/core": "^4.3.3",
@@ -22,10 +22,8 @@
     "react-scripts": "3.1.1"
   },
   "devDependencies": {
-    "concurrently": "^4.1.2",
     "electron": "^6.0.4",
-    "electron-builder": "^21.2.0",
-    "wait-on": "^3.3.0"
+    "electron-builder": "^21.2.0"
   },
   "author": {
     "name": "Rocco Mormont",
@@ -49,18 +47,11 @@
     "productName": "ElectronSpider",
     "appId": "com.rocco.spider",
     "copyright": "rocco",
-    "files": [
-      "app",
-      "build",
-      "dist",
-      "spider",
-      "package.json"
-    ],
     "directories": {
       "output": "dist"
     },
     "win": {
-      "icon": "app/app.icns",
+      "icon": "build/app.icns",
       "target": [
         {
           "target": "nsis"
