@@ -2,6 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import { SnackbarProvider, useSnackbar } from 'notistack';
 
 const { ipcRenderer } = window.electron || {};
 
@@ -11,10 +12,16 @@ const useStyles = makeStyles((theme) => ({
     padding: "8px",
     overflow: "hidden",
     textAlign: "center"
-  }
+  },
+
+  close: {
+    padding: theme.spacing(0.5),
+  },
 }));
 
-export default function FunctionalApp() {
+const urlRegex = /toutiao.com\/(\w+)\/?/i
+
+function FunctionalApp() {
   const classes = useStyles();
   const [values, setValues] = React.useState({
     dir: "",
@@ -22,22 +29,48 @@ export default function FunctionalApp() {
     isCrawling: false
   });
 
+  const { enqueueSnackbar } = useSnackbar();
+
+  const openSnackbar = (msg, options = {}) => {
+    enqueueSnackbar(msg, Object.assign({ autoHideDuration: 3000 }, options));
+  };
+
   const handleChange = (name) => (event) => {
     setValues({ ...values, [name]: event.target.value });
   };
 
   const handleStart = async () => {
-    console.log("id:", values.url);
+    const { dir, url } = values;
+    let [, id] = url.match(urlRegex) || [];
+
+    if (!id) {
+      openSnackbar('请输入有效的链接', { variant: 'warning' })
+      return
+    }
+
+    if (!id.startsWith('i')) {
+      id = 'i' + id.substr(1)
+    }
+
+    openSnackbar(`开始下载😋，${id}`, { variant: 'info' })
+
     updateCrawlState(true);
-    ipcRenderer && ipcRenderer.send("crawl", JSON.stringify({ dir: values.dir, id: values.url }));
+    ipcRenderer && ipcRenderer.send("crawl", JSON.stringify({ dir, id }));
   };
 
   const updateCrawlState = (state) => {
     setValues({ ...values, isCrawling: state });
   };
 
-  const ipcCrawlListener = (event, data) => {
-    console.log("From main ipc:", data);
+  const ipcCrawlListener = (event, msg) => {
+    const [error, data] = msg
+    if (error) {
+      console.log("From main ipc [failure]:", error.message);
+      openSnackbar('下载失败😭，请检查链接并重试', { variant: 'error' })
+    } else {
+      console.log("From main ipc [success]:", data.length);
+      openSnackbar(`下载成功👌，共 ${data.length} 张图片`, { variant: 'success' })
+    }
     updateCrawlState(false);
   };
 
@@ -91,7 +124,7 @@ export default function FunctionalApp() {
           <TextField
             label="文章 ID"
             value={values.url}
-            placeholder="请输入头条文章网址 ID, 如: i6717557272035197451"
+            placeholder="请输入头条文章链接, 如: https://www.toutiao.com/a6704814599696286221/"
             fullWidth
             margin="normal"
             variant="outlined"
@@ -107,5 +140,15 @@ export default function FunctionalApp() {
         </Button>
       </header>
     </div>
+  );
+}
+
+export default function IntegrationNotistack() {
+  return (
+    <SnackbarProvider
+      maxSnack={3}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right', }}>
+      <FunctionalApp />
+    </SnackbarProvider>
   );
 }

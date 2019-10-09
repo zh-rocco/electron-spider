@@ -1,6 +1,6 @@
 {
   "name": "electron-spider",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": ".",
   "description": "Electron spider for toutiao.",
   "private": false,
@@ -16,7 +16,9 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.3.3",
+    "@material-ui/icons": "^4.4.3",
     "electron-is-dev": "^1.1.0",
+    "notistack": "^0.9.3",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-scripts": "3.1.1"

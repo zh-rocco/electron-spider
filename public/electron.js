@@ -60,9 +60,9 @@ app.on("activate", function () {
 ipcMain.on("crawl", async (event, msg) => {
   try {
     const data = await spider(JSON.parse(msg))
-    event.sender.send("after-crawl", data);
+    event.sender.send("after-crawl", [undefined, data]);
   } catch (error) {
-    event.sender.send("after-crawl", error);
+    event.sender.send("after-crawl", [error]);
   }
 });
 

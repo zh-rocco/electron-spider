@@ -93,23 +93,23 @@ module.exports = async function main({ dir, id }) {
 
     mkdir(targetPath);
 
-    await Promise.all(
-      images.map(async (image, idx) => {
-        console.log(idx, image);
-        return download(image, targetPath, (idx + 1 + "").padStart(4, 0));
-      })
-    );
+    // await Promise.all(
+    //   images.map(async (image, idx) => {
+    //     console.log(idx, image);
+    //     return download(image, targetPath, (idx + 1 + "").padStart(4, 0));
+    //   })
+    // );
 
-    // let i = 0;
+    let i = 0;
 
-    // for (const image of images) {
-    //   console.log(i, image);
-    //   await download(image, targetPath, (i + 1 + "").padStart(4, 0));
-    //   i++;
-    // }
+    for (const image of images) {
+      console.log(i, image);
+      await download(image, targetPath, (i + 1 + "").padStart(4, 0));
+      i++;
+    }
 
-    return "success!";
+    return images;
   } catch (e) {
-    return "failure";
+    throw new Error("failure");
   }
 };
